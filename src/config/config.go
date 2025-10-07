@@ -5,18 +5,20 @@ import (
 	"os"
 )
 
-var Port string
-var Name string
-var Version string
-var Dir struct {
-	Current string
-	Root    string
-	Tmp     string
-	Data    string
-	Logs    string
-}
+var (
+	Port    string
+	Name    string
+	Version string
+	Dir     struct {
+		Current string
+		Root    string
+		Tmp     string
+		Data    string
+		Logs    string
+	}
+)
 
-func Init() {
+func Init() error {
 	Port = "8080"
 	Name = "AlertHub"
 	Version = "0.1"
@@ -26,16 +28,19 @@ func Init() {
 	Dir.Data = Dir.Tmp + "/" + Name + "/data"
 	Dir.Logs = Dir.Tmp + "/" + Name + "/logs"
 
-	makeAllDirectories()
+	return makeAllDirectories()
 }
 
-func makeAllDirectories() {
-	var directories = []string{Dir.Logs, Dir.Data, Dir.Tmp}
+func makeAllDirectories() error {
+	directories := []string{Dir.Logs, Dir.Data, Dir.Tmp}
 	for _, directory := range directories {
 		if _, err := os.Stat(directory); os.IsNotExist(err) {
-			os.MkdirAll(directory, 0755)
+			if err := os.MkdirAll(directory, 0o755); err != nil {
+				return fmt.Errorf("failed to create directory %s: %w", directory, err)
+			}
 		}
 	}
+	return nil
 }
 
 func String() string {
