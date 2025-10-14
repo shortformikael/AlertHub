@@ -11,8 +11,11 @@ var server struct {
 	apiroute string
 }
 
-func Init() {
-	logger.Log(logComponent, logger.INFO, "Server Initializing...")
-	defer logger.Log(logComponent, logger.INFO, "Server Initialized!")
+func Init() error {
+	logger.Log(logComponent, logger.LogTypeInfo, "Server Initializing...")
+
 	server.apiroute = config.Name + "/api"
+
+	logger.Log(logComponent, logger.LogTypeInfo, "Server Initialized!")
+	return nil
 }

@@ -16,11 +16,11 @@ import (
 type LogType string
 
 const (
-	INFO    LogType = "INFO"
-	WARNING LogType = "WARNING"
-	ERROR   LogType = "ERROR"
-	DEBUG   LogType = "DEBUG"
-	FATAL   LogType = "FATAL"
+	LogTypeInfo    LogType = "INFO"
+	LogTypeWarning LogType = "WARNING"
+	LogTypeError   LogType = "ERROR"
+	LogTypeDebug   LogType = "DEBUG"
+	LogTypeFatal   LogType = "FATAL"
 )
 
 type LogEntry struct {
@@ -82,15 +82,15 @@ func (le *LogEntry) Init(component string, logType LogType, description string, 
 }
 
 func (le *LogEntry) PrintString() string {
-	var name string = colors.BrightWhite("[" + config.Name + "]")
-	var time string = colors.BrightBlue("[" + le.Timestamp + "]")
-	var component string = colors.Yellow("[" + le.Component + "]")
-	var subComponent string = ""
+	name := colors.BrightWhite("[" + config.Name + "]")
+	time := colors.BrightBlue("[" + le.Timestamp + "]")
+	component := colors.Yellow("[" + le.Component + "]")
+	subComponent := ""
 	if le.SubComponent != "" {
 		subComponent = colors.BrightGreen("[" + le.SubComponent + "]")
 	}
-	var logType string = le.getLogTypeString()
-	var description string = le.Description
+	logType := le.getLogTypeString()
+	description := le.Description
 
 	if le.SubComponent != "" {
 		return fmt.Sprintf("%s %s %s %s %s: %s",
@@ -111,30 +111,30 @@ func (le *LogEntry) PrintString() string {
 
 func (le *LogEntry) getLogTypeString() string {
 	switch le.LogType {
-	case INFO:
+	case LogTypeInfo:
 		return colors.Green("[" + string(le.LogType) + "]")
-	case WARNING:
+	case LogTypeWarning:
 		return colors.Yellow("[" + string(le.LogType) + "]")
-	case ERROR:
+	case LogTypeError:
 		return colors.Red("[" + string(le.LogType) + "]")
-	case DEBUG:
+	case LogTypeDebug:
 		return colors.Cyan("[" + string(le.LogType) + "]")
-	case FATAL:
+	case LogTypeFatal:
 		return colors.Orange("[" + string(le.LogType) + "]")
 	}
 	return colors.White("[" + string(le.LogType) + "]")
 }
 
 func saveEntry(logEntry LogEntry) {
-	var filename string = "development_" + time.Now().Format("2006-01-02") + ".log"
-	var filepath string = config.Dir.Logs + "/" + filename
-	var file, openError = os.OpenFile(filepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	filename := "development_" + time.Now().Format("2006-01-02") + ".log"
+	filepath := config.Dir.Logs + "/" + filename
+	file, openError := os.OpenFile(filepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 	if openError != nil {
 		fmt.Println("Error opening file: ", openError)
 		return
 	}
 	defer file.Close()
-	var jsonData, jsonError = json.Marshal(logEntry)
+	jsonData, jsonError := json.Marshal(logEntry)
 	if jsonError != nil {
 		fmt.Println("Error marshalling log entry: ", jsonError)
 		return
